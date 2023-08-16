@@ -14,6 +14,7 @@ const initialStateTodos = [
 ];
 const App = () => {
   const [todos, setTodos] = useState(initialStateTodos);
+  const [filter, setFilter] = useState("all"); //creamos un estado para filtrar, por defecto dejamos all
 
   //creo una funcion para crear los todos, que le pasaré al componente por props
   const createTodo = (title) => {
@@ -25,6 +26,54 @@ const App = () => {
     setTodos([...todos, newTodo]);
   };
 
+  //updete o change state todo
+  const changeStateTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  //remove todo
+  const removeTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  //counter of itens not completed
+  //esto me devuelve un numero, hago un lengh de los elementos del array que ha creado al filtrar
+  // todos los todos que no esta completados
+  const computedItems = todos.filter((todo) => !todo.completed).length;
+
+  //clear completed
+  const clearCompleted = () => {
+    setTodos(todos.filter((todo) => !todo.completed));
+  };
+
+  //filtrar
+  // const filterTodos = () => {
+  //   switch (filter) {
+  //     case "all":
+  //       return todos;
+  //     case "active":
+  //       return todos.filter((todo) => !todo.completed);
+  //     case "complete":
+  //       return todos.filter((todo) => todo.completed);
+  //     default:
+  //       return todos;
+  //   }
+  // };
+
+  //alternativa al switch creo una biblioteca
+  const filterTodos = (filter) => {
+    const filters = {
+      all: todos,
+      active: todos.filter((todo) => !todo.completed),
+      complete: todos.filter((todo) => todo.completed),
+    };
+    return filters[filter];
+  };
+
   return (
     <div
       className="bg-[url('./assets/images/bg-mobile-light.jpg')]
@@ -34,9 +83,16 @@ const App = () => {
 
       <main className="container mx-auto px-4 mt-5">
         <TodoCreate createTodo={createTodo} />
-        <TodoList todos={todos} />
-        <TodoComputed />
-        <TodoFilter />
+        <TodoList
+          todos={filterTodos(filter)}
+          removeTodo={removeTodo}
+          changeStateTodo={changeStateTodo}
+        />
+        <TodoComputed
+          computedItems={computedItems}
+          clearCompleted={clearCompleted}
+        />
+        <TodoFilter setFilter={setFilter} filter={filter} />
       </main>
 
       <footer className="text-center mt-8">
