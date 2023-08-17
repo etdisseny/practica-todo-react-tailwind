@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./compontents/Header";
 import TodoComputed from "./compontents/TodoComputed";
 import TodoCreate from "./compontents/TodoCreate";
@@ -6,15 +6,23 @@ import TodoFilter from "./compontents/TodoFilter";
 import TodoList from "./compontents/TodoList";
 import { data } from "autoprefixer";
 
-const initialStateTodos = [
-  { id: 1, title: "Completar curso Javascript", completed: true },
-  { id: 2, title: "Ir al gimnasio", completed: false },
-  { id: 3, title: "Hacer la compra", completed: false },
-  { id: 4, title: "Limpiar la casa", completed: false },
-];
+// const initialStateTodos = [
+//   { id: 1, title: "Completar curso Javascript", completed: true },
+//   { id: 2, title: "Ir al gimnasio", completed: false },
+//   { id: 3, title: "Hacer la compra", completed: false },
+//   { id: 4, title: "Limpiar la casa", completed: false },
+// ];
+
+//inicializamos con lo que nos devuelva el localStorage
+const initialStateTodos = JSON.parse(localStorage.getItem("todos"));
 const App = () => {
   const [todos, setTodos] = useState(initialStateTodos);
   const [filter, setFilter] = useState("all"); //creamos un estado para filtrar, por defecto dejamos all
+
+  //Guardo todos en localstorage
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   //creo una funcion para crear los todos, que le pasaré al componente por props
   const createTodo = (title) => {
@@ -78,11 +86,12 @@ const App = () => {
     <div
       className="bg-[url('./assets/images/bg-mobile-light.jpg')]
       dark:bg-[url('./assets/images/bg-mobile-dark.jpg')]
-    bg-contain bg-no-repeat bg-gray-100 min-h-screen dark:bg-gray-800"
+    bg-contain bg-no-repeat bg-gray-100 min-h-screen dark:bg-gray-800 transition-all duration-1000
+    md:bg-[url('./assets/images/bg-desktop-light.jpg')] md:dark:bg-[url('./assets/images/bg-desktop-dark.jpg')]"
     >
       <Header />
 
-      <main className="container mx-auto px-4 mt-5">
+      <main className="container mx-auto px-4 mt-5 md:max-w-2xl">
         <TodoCreate createTodo={createTodo} />
         <TodoList
           todos={filterTodos(filter)}
